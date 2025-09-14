@@ -1,0 +1,23 @@
+Package: retirementsim
+Type: Package
+Title: Monte Carlo Retirement Simulation Tools
+Version: 0.0.0.9000
+Authors@R:
+    person("Michael", "McLaren", , "m.mclaren42@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-1575-473X"))
+Description: A composable, extensible R package for Monte Carlo retirement simulations
+    using S7 classes and matrix-based computations. Provides tools for modeling
+    retirement portfolios with various market models, cash flows, and investment strategies.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    S7,
+    ggplot2,
+    scales
+Suggests:
+    testthat (>= 3.0.0),
+    devtools
+Config/testthat/edition: 3
