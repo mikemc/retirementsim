@@ -21,3 +21,13 @@ Suggests:
     testthat (>= 3.0.0),
     devtools
 Config/testthat/edition: 3
+Collate: 
+    'analysis.R'
+    'classes.R'
+    'cash-flows.R'
+    'market-models.R'
+    'plotting.R'
+    'retirementsim-package.R'
+    'simulation.R'
+    'utils.R'
+    'zzz.R'
