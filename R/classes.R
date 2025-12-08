@@ -86,6 +86,7 @@ Simulation <- new_class("Simulation",
     start_age = new_property(class_numeric),
     end_age = new_property(class_numeric),
     seed = new_property(class_numeric),
+    initial_balance = new_property(class_numeric, default = 0),
     phases = new_property(class_list, default = list()),
     global_market_models = new_property(class_list, default = list())
   )

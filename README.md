@@ -19,6 +19,7 @@ devtools::install("path/to/retirementsim")
 
 Here's a complete working example showing how to create and run a retirement simulation with monthly periods, with
 
+- An initial balance of $50,000
 - A market model (stocks with 7% mean return, 18% volatility)
 - A accumulation phase (age 30-65) with monthly contributions that start at $1000 and grow 3% annually
 - A distribution phase (age 65-95) with monthly $5000 withdrawals (adjusted for inflation)
@@ -31,6 +32,7 @@ sim <- sim_define(
   periods_per_year = 12,
   start_age = 30,
   end_age = 95,
+  initial_balance = 50000,
   seed = 42
 ) |>
   add_market_model(

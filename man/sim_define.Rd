@@ -9,6 +9,7 @@ sim_define(
   periods_per_year = 12,
   start_age = 30,
   end_age = 95,
+  initial_balance = 0,
   seed = as.numeric(Sys.time())
 )
 }
@@ -21,6 +22,8 @@ annual)}
 \item{start_age}{Starting age for simulation}
 
 \item{end_age}{Ending age for simulation}
+
+\item{initial_balance}{Starting portfolio balance (default 0)}
 
 \item{seed}{Random seed for reproducibility}
 }

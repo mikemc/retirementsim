@@ -5,6 +5,7 @@
 #'   annual)
 #' @param start_age Starting age for simulation
 #' @param end_age Ending age for simulation
+#' @param initial_balance Starting portfolio balance (default 0)
 #' @param seed Random seed for reproducibility
 #' @return A Simulation object
 #' @include classes.R
@@ -14,6 +15,7 @@ sim_define <- function(
   periods_per_year = 12,
   start_age = 30,
   end_age = 95,
+  initial_balance = 0,
   seed = as.numeric(Sys.time())
 ) {
   Simulation(
@@ -21,6 +23,7 @@ sim_define <- function(
     periods_per_year = periods_per_year,
     start_age = start_age,
     end_age = end_age,
+    initial_balance = initial_balance,
     seed = seed
   )
 }
@@ -130,7 +133,7 @@ sim_run <- function(sim) {
   n_periods <- (sim@end_age - sim@start_age) * sim@periods_per_year
 
   # Initialize portfolio matrix
-  portfolios <- matrix(0, nrow = sim@n_simulations, ncol = n_periods + 1)
+  portfolios <- matrix(sim@initial_balance, nrow = sim@n_simulations, ncol = n_periods + 1)
 
   # Generate returns for all assets upfront
   all_returns <- list()

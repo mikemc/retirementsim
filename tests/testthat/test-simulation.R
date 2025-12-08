@@ -111,3 +111,35 @@ test_that("A simple simulation runs without errors", {
   success_rate <- sim_success_rate(results)
   expect_true(success_rate >= 0 && success_rate <= 1)
 })
+
+test_that("initial_balance parameter works correctly", {
+  # Test with initial_balance set
+  sim <- sim_define(
+    n_simulations = 10,
+    start_age = 65,
+    end_age = 70,
+    initial_balance = 1000000,
+    seed = 123
+  ) |>
+    add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+    add_phase(distribution_phase(65, 70,
+      withdrawal = WithdrawalFlow(amount = 4000)))
+
+  results <- sim_run(sim)
+
+  # Verify all simulations start with initial_balance
+  expect_true(all(results@trajectories[, 1] == 1000000))
+
+  # Test default behavior (initial_balance = 0)
+  sim_default <- sim_define(
+    n_simulations = 10,
+    start_age = 30,
+    end_age = 35,
+    seed = 123
+  ) |>
+    add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+    add_phase(holding_phase(30, 35))
+
+  results_default <- sim_run(sim_default)
+  expect_true(all(results_default@trajectories[, 1] == 0))
+})
