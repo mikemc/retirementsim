@@ -42,7 +42,7 @@ method(generate_cash_flows, WithdrawalFlow) <- function(flow, n_periods, periods
     if (flow@inflation_adjusted) {
       # Simple inflation adjustment (could be enhanced)
       year_fraction <- (i - 1) / periods_per_year
-      amounts[i] <- flow@amount * (1.03)^year_fraction  # Assume 3% inflation
+      amounts[i] <- flow@amount * (1 + flow@inflation_rate)^year_fraction
     } else {
       amounts[i] <- flow@amount
     }

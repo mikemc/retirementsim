@@ -48,6 +48,7 @@ WithdrawalFlow <- new_class("WithdrawalFlow",
   properties = list(
     amount = new_property(class_numeric),
     inflation_adjusted = new_property(class_logical, default = TRUE),
+    inflation_rate = new_property(class_numeric, default = 0.03),
     rule = new_property(class_character, default = "constant")
   )
 )

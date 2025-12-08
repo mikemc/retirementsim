@@ -22,7 +22,7 @@ Here's a complete working example showing how to create and run a retirement sim
 - An initial balance of $50,000
 - A market model (stocks with 7% mean return, 18% volatility)
 - A accumulation phase (age 30-65) with monthly contributions that start at $1000 and grow 3% annually
-- A distribution phase (age 65-95) with monthly $5000 withdrawals (adjusted for inflation)
+- A distribution phase (age 65-95) with monthly $5000 withdrawals (adjusted for 2.5% inflation)
 
 ```r
 library(retirementsim)
@@ -55,7 +55,8 @@ sim <- sim_define(
       to_age = 95,
       withdrawal = WithdrawalFlow(
         amount = 5000,
-        inflation_adjusted = TRUE
+        inflation_adjusted = TRUE,
+        inflation_rate = 0.025
       )
     )
   )
