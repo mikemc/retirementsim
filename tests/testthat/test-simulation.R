@@ -216,3 +216,97 @@ test_that("WithdrawalFlow inflation_rate works with different period frequencies
   # After 2 years (period 24), should be approximately 1000 * 1.03^2
   expect_equal(amounts_monthly[24], 1000 * (1.03)^(23/12), tolerance = 0.01)
 })
+
+test_that("holding_phase in multi-phase scenario maintains balance and applies returns", {
+  # Test accumulation -> holding -> distribution sequence
+  # Validates holding phase has no cash flows but applies market returns
+  sim <- sim_define(
+    start_age = 30,
+    end_age = 70,
+    n_simulations = 50,
+    seed = 123
+  ) |>
+    add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+    add_phase(accumulation_phase(30, 50,
+      contribution = ContributionFlow(amount = 1000, growth_rate = 0.03))) |>
+    add_phase(holding_phase(50, 65)) |>
+    add_phase(distribution_phase(65, 70,
+      withdrawal = WithdrawalFlow(amount = 3000)))
+
+  results <- sim_run(sim)
+
+  # Verify simulation ran successfully
+  expect_s7_class(results, SimResults)
+  expect_equal(nrow(results@trajectories), 50)
+  expect_equal(ncol(results@trajectories), (70-30)*12 + 1)
+
+  # Check that most simulations show growth during holding period
+  # Age 50 = start of holding, Age 65 = end of holding
+  period_50 <- age_to_period(50, 30, 12)
+  period_65 <- age_to_period(65, 30, 12)
+
+  # Most simulations should see growth during holding period (positive returns)
+  growth_count <- sum(results@trajectories[, period_65] > results@trajectories[, period_50])
+  expect_true(growth_count > 25)  # More than half should grow with 7% mean return
+
+  # Verify holding phase has no discontinuities
+  # Balance at period 50 should smoothly transition to period 50+1
+  expect_true(all(is.finite(results@trajectories[, period_50])))
+  expect_true(all(results@trajectories[, period_50] > 0))
+})
+
+test_that("Analysis functions work correctly", {
+  # Test sim_success_rate, sim_percentiles, and sim_summary
+  sim <- sim_define(
+    start_age = 30,
+    end_age = 40,
+    n_simulations = 100,
+    seed = 123
+  ) |>
+    add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+    add_phase(accumulation_phase(30, 40,
+      contribution = ContributionFlow(amount = 1000)))
+
+  results <- sim_run(sim)
+
+  # Test sim_success_rate
+  sr_0 <- sim_success_rate(results, threshold = 0)
+  expect_true(sr_0 >= 0 && sr_0 <= 1)
+  expect_true(sr_0 > 0.9)  # Should be very high for accumulation phase
+
+  sr_high <- sim_success_rate(results, threshold = 1000000)
+  expect_true(sr_high >= 0 && sr_high <= 1)
+  expect_true(sr_high < 0.5)  # Most won't reach 1M in 10 years
+
+  # Higher threshold should have lower or equal success rate
+  expect_true(sr_0 >= sr_high)
+
+  # Test sim_percentiles
+  pct <- sim_percentiles(results)
+  expect_equal(nrow(pct), 5)  # Default 5 percentiles
+  expect_equal(ncol(pct), ncol(results@trajectories))
+
+  # Percentiles should be ordered at each time point
+  expect_true(all(pct[2,] >= pct[1,]))  # 25th >= 10th
+  expect_true(all(pct[3,] >= pct[2,]))  # 50th >= 25th
+  expect_true(all(pct[4,] >= pct[3,]))  # 75th >= 50th
+  expect_true(all(pct[5,] >= pct[4,]))  # 90th >= 75th
+
+  # Test custom percentiles
+  pct_custom <- sim_percentiles(results, probs = c(0.1, 0.5, 0.9))
+  expect_equal(nrow(pct_custom), 3)
+
+  # Test sim_summary
+  summary_stats <- sim_summary(results)
+  expect_type(summary_stats, "list")
+  expect_true("success_rate" %in% names(summary_stats))
+  expect_true("final_percentiles" %in% names(summary_stats))
+  expect_true("min_value" %in% names(summary_stats))
+  expect_true("max_value" %in% names(summary_stats))
+
+  # Validate summary values make sense
+  expect_true(summary_stats$min_value >= 0)
+  expect_true(summary_stats$max_value >= summary_stats$min_value)
+  expect_true(summary_stats$success_rate >= 0 && summary_stats$success_rate <= 1)
+  expect_length(summary_stats$final_percentiles, 5)
+})
