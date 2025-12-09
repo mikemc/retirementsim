@@ -95,10 +95,45 @@ distribution_phase <- function(
 
 #' Create holding phase
 #'
+#' A holding phase maintains portfolio value without contributions or withdrawals,
+#' allowing market returns to continue while bridging gaps between other phases.
+#'
 #' @param from_age Starting age for phase
 #' @param to_age Ending age for phase
-#' @param strategy Strategy object
-#' @return A Phase object
+#' @param strategy Strategy object (optional)
+#'
+#' @return A Phase object representing a holding phase
+#'
+#' @details
+#' A holding phase has no cash flows (no contributions or withdrawals) but still
+#' applies market returns during the period. This is useful for periods where
+#' you want the portfolio to grow (or decline) based on market performance alone.
+#'
+#' @examples
+#' library(retirementsim)
+#'
+#' # Simple holding phase spanning entire simulation
+#' sim <- sim_define(
+#'   start_age = 30,
+#'   end_age = 65,
+#'   n_simulations = 100
+#' ) |>
+#'   add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+#'   add_phase(holding_phase(30, 65))
+#'
+#' # Holding phase in multi-phase sequence
+#' sim <- sim_define(
+#'   start_age = 30,
+#'   end_age = 70,
+#'   n_simulations = 100
+#' ) |>
+#'   add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+#'   add_phase(accumulation_phase(30, 50,
+#'     contribution = ContributionFlow(amount = 1000))) |>
+#'   add_phase(holding_phase(50, 60)) |>
+#'   add_phase(distribution_phase(60, 70,
+#'     withdrawal = WithdrawalFlow(amount = 3000)))
+#'
 #' @export
 holding_phase <- function(from_age, to_age, strategy = NULL) {
   Phase(

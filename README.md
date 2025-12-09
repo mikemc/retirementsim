@@ -77,6 +77,41 @@ library(ggplot2)
 plot(results)
 ```
 
+## Phase Coverage
+
+Simulations require complete phase coverage from `start_age` to `end_age` with no gaps or overlaps.
+
+**Valid configurations:**
+
+```r
+# Phases touch at boundaries
+sim <- sim_define(start_age = 30, end_age = 95) |>
+  add_phase(accumulation_phase(30, 65)) |>
+  add_phase(distribution_phase(65, 95))
+
+# Use holding_phase() to fill gaps
+sim <- sim_define(start_age = 30, end_age = 95) |>
+  add_phase(accumulation_phase(30, 50)) |>
+  add_phase(holding_phase(50, 65)) |>
+  add_phase(distribution_phase(65, 95))
+```
+
+**Invalid configurations:**
+
+```r
+# Gap between phases
+sim <- sim_define(start_age = 30, end_age = 95) |>
+  add_phase(accumulation_phase(30, 50)) |>
+  add_phase(distribution_phase(60, 95))  # Error: gap from 50-60
+
+# Overlapping phases
+sim <- sim_define(start_age = 30, end_age = 95) |>
+  add_phase(accumulation_phase(30, 60)) |>
+  add_phase(distribution_phase(50, 95))  # Error: overlap at 50-60
+```
+
+Use `holding_phase()` to bridge periods with no contributions or withdrawals while market returns continue to apply.
+
 ## Current features
 
 ### Core Components

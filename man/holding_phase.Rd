@@ -11,11 +11,43 @@ holding_phase(from_age, to_age, strategy = NULL)
 
 \item{to_age}{Ending age for phase}
 
-\item{strategy}{Strategy object}
+\item{strategy}{Strategy object (optional)}
 }
 \value{
-A Phase object
+A Phase object representing a holding phase
 }
 \description{
-Create holding phase
+A holding phase maintains portfolio value without contributions or withdrawals,
+allowing market returns to continue while bridging gaps between other phases.
+}
+\details{
+A holding phase has no cash flows (no contributions or withdrawals) but still
+applies market returns during the period. This is useful for periods where
+you want the portfolio to grow (or decline) based on market performance alone.
+}
+\examples{
+library(retirementsim)
+
+# Simple holding phase spanning entire simulation
+sim <- sim_define(
+  start_age = 30,
+  end_age = 65,
+  n_simulations = 100
+) |>
+  add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+  add_phase(holding_phase(30, 65))
+
+# Holding phase in multi-phase sequence
+sim <- sim_define(
+  start_age = 30,
+  end_age = 70,
+  n_simulations = 100
+) |>
+  add_market_model(GBMModel(mean_return = 0.07, sd_return = 0.18)) |>
+  add_phase(accumulation_phase(30, 50,
+    contribution = ContributionFlow(amount = 1000))) |>
+  add_phase(holding_phase(50, 60)) |>
+  add_phase(distribution_phase(60, 70,
+    withdrawal = WithdrawalFlow(amount = 3000)))
+
 }
