@@ -36,8 +36,8 @@ method(generate_cash_flows, ContributionFlow) <- function(flow, n_periods, perio
 method(generate_cash_flows, WithdrawalFlow) <- function(flow, n_periods, periods_per_year) {
   amounts <- numeric(n_periods)
 
-  # For now, implement simple constant withdrawal
-  # TODO: Add inflation adjustment and other withdrawal rules
+  # MVP supports constant withdrawals with optional inflation adjustment
+  # TODO (Phase 3): Add variable withdrawal rules (percentage-based, RMD, guardrails)
   for (i in 1:n_periods) {
     if (flow@inflation_adjusted) {
       # Simple inflation adjustment (could be enhanced)

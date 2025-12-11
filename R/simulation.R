@@ -143,7 +143,7 @@ holding_phase <- function(from_age, to_age, strategy = NULL) {
   )
 }
 
-#' Add global market model
+#' Add market model
 #'
 #' @param sim A Simulation object
 #' @param model A MarketModel object
@@ -151,7 +151,7 @@ holding_phase <- function(from_age, to_age, strategy = NULL) {
 #' @return Modified Simulation object
 #' @export
 add_market_model <- function(sim, model, asset = "stocks") {
-  sim@global_market_models[[asset]] <- model
+  sim@market_models[[asset]] <- model
   sim
 }
 
@@ -172,8 +172,8 @@ sim_run <- function(sim) {
 
   # Generate returns for all assets upfront
   all_returns <- list()
-  for (asset_name in names(sim@global_market_models)) {
-    model <- sim@global_market_models[[asset_name]]
+  for (asset_name in names(sim@market_models)) {
+    model <- sim@market_models[[asset_name]]
     all_returns[[asset_name]] <- generate_returns(
       model,
       sim@n_simulations,

@@ -48,8 +48,7 @@ WithdrawalFlow <- new_class("WithdrawalFlow",
   properties = list(
     amount = new_property(class_numeric),
     inflation_adjusted = new_property(class_logical, default = TRUE),
-    inflation_rate = new_property(class_numeric, default = 0.03),
-    rule = new_property(class_character, default = "constant")
+    inflation_rate = new_property(class_numeric, default = 0.03)
   )
 )
 
@@ -74,8 +73,7 @@ Phase <- new_class("Phase",
     start_age = new_property(class_numeric),
     end_age = new_property(class_numeric),
     cash_flows = new_property(class_list, default = list()),
-    strategy = new_property(class_any, default = NULL),
-    market_models = new_property(class_list, default = list())
+    strategy = new_property(class_any, default = NULL)
   )
 )
 
@@ -89,7 +87,7 @@ Simulation <- new_class("Simulation",
     seed = new_property(class_numeric),
     initial_balance = new_property(class_numeric, default = 0),
     phases = new_property(class_list, default = list()),
-    global_market_models = new_property(class_list, default = list())
+    market_models = new_property(class_list, default = list())
   )
 )
 

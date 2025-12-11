@@ -72,8 +72,9 @@ Phase <- new_class("Phase",
     start_age = new_property(class_numeric),
     end_age = new_property(class_numeric),
     cash_flows = new_property(class_list, default = list()),
-    strategy = new_property(class_any, default = NULL),
-    market_models = new_property(class_list, default = list())
+    strategy = new_property(class_any, default = NULL)
+    # Note: Per-phase market_models planned for Phase 2 (if needed)
+    # MVP uses Simulation.market_models for all phases
   )
 )
 
@@ -86,7 +87,7 @@ Simulation <- new_class("Simulation",
     end_age = new_property(class_numeric),
     seed = new_property(class_numeric, default = NULL),
     phases = new_property(class_list, default = list()),
-    global_market_models = new_property(class_list, default = list())
+    market_models = new_property(class_list, default = list())  # renamed from global_market_models
   )
 )
 
@@ -263,15 +264,17 @@ WithdrawalFlow <- new_class("WithdrawalFlow",
   properties = list(
     amount = new_property(class_numeric),
     inflation_adjusted = new_property(class_logical, default = TRUE),
-    rule = new_property(class_character, default = "constant")
+    inflation_rate = new_property(class_numeric, default = 0.03)
+    # Note: rule property planned for Phase 3 (variable withdrawal strategies)
+    # MVP supports only constant withdrawals with optional inflation adjustment
   )
 )
 
-withdrawal_flow <- function(amount, inflation_adjusted = TRUE, rule = "constant") {
+withdrawal_flow <- function(amount, inflation_adjusted = TRUE, inflation_rate = 0.03) {
   WithdrawalFlow(
     amount = amount,
     inflation_adjusted = inflation_adjusted,
-    rule = rule
+    inflation_rate = inflation_rate
   )
 }
 
@@ -517,6 +520,21 @@ retirementsim/
 └── vignettes/
     └── getting-started.Rmd
 ```
+
+## MVP vs Full Design
+
+This design document represents the complete vision for retirementsim. However, the MVP implementation (v0.1.0) includes only Phase 1 features:
+
+**Not Yet Implemented in MVP:**
+- `Phase.market_models` - Planned for Phase 2 (if needed); MVP uses `Simulation.market_models` for all phases
+- `WithdrawalFlow.rule` - Planned for Phase 3; MVP supports only constant withdrawals (with optional inflation)
+- Multiple asset classes - Planned for Phase 2
+- Variable withdrawal strategies - Planned for Phase 3
+
+**MVP Simplifications:**
+- Renamed `Simulation.global_market_models` to `Simulation.market_models` since there are no phase-level models to distinguish from
+
+These changes create a cleaner API by removing unimplemented properties that could confuse users.
 
 ## Implementation Roadmap
 
